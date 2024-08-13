@@ -1,0 +1,1 @@
+/* empty css              */import{S as t}from"./OperationalPoint-C_nQyo4m.js";import{O as o}from"./OperationalPointList-D1aV-sbO.js";import"./index-RYns6xqu.js";const a=t.operational_points??[],s={component:o,title:"Manchette/OperationalPointList",tags:["autodocs"]},p={args:{operationalPoints:a}},l=["Default"];export{p as Default,l as __namedExportsOrder,s as default};
