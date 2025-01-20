@@ -29,6 +29,6 @@ type Story = StoryObj<typeof Manchette>;
 
 export const Default: Story = {
   args: {
-    waypoints: SAMPLE_WAYPOINTS.map((waypoint) => ({ ...waypoint, display: true })),
+    waypoints: SAMPLE_WAYPOINTS,
   },
 };

@@ -13,39 +13,33 @@ type WaypointProps = {
 };
 
 const Waypoint = ({
-  waypoint: { name, secondaryCode, id, position, display, onClick },
+  waypoint: { name, secondaryCode, id, position, onClick },
   nameRef,
   isActive,
   isMenuActive,
-}: WaypointProps) => {
-  if (!display) return null;
+}: WaypointProps) => (
+  <div
+    className={cx('flex waypoint items-baseline', {
+      'waypoint-active': isActive,
+      'menu-active': isMenuActive,
+    })}
+    id={id}
+    onClick={() => {
+      if (onClick && !isMenuActive) onClick(id);
+    }}
+  >
+    <div className="waypoint-position justify-self-start text-end">{positionMmToKm(position)}</div>
 
-  return (
-    <div
-      className={cx('flex waypoint items-baseline', {
-        'waypoint-active': isActive,
-        'menu-active': isMenuActive,
-      })}
-      id={id}
-      onClick={() => {
-        if (onClick && !isMenuActive) onClick(id);
-      }}
-    >
-      <div className="waypoint-position justify-self-start text-end">
-        {positionMmToKm(position)}
-      </div>
-
-      <div ref={nameRef} className="waypoint-name mx-2 justify-self-start">
-        {name}
-      </div>
-      <div className="waypoint-separator"></div>
-      <div className="waypoint-ch font-mono justify-self-end">{secondaryCode}</div>
-      <div className="waypoint-separator"></div>
-
-      <div className="waypoint-type"></div>
-      <div className="waypoint-separator"></div>
+    <div ref={nameRef} className="waypoint-name mx-2 justify-self-start">
+      {name}
     </div>
-  );
-};
+    <div className="waypoint-separator"></div>
+    <div className="waypoint-ch font-mono justify-self-end">{secondaryCode}</div>
+    <div className="waypoint-separator"></div>
+
+    <div className="waypoint-type"></div>
+    <div className="waypoint-separator"></div>
+  </div>
+);
 
 export default Waypoint;

@@ -16,9 +16,6 @@ type Story = StoryObj<typeof Waypoint>;
 
 export const Default: Story = {
   args: {
-    waypoint: {
-      ...SAMPLE_WAYPOINTS[0],
-      display: true,
-    },
+    waypoint: SAMPLE_WAYPOINTS[0],
   },
 };

@@ -10,7 +10,6 @@ export type Waypoint = {
 
 export type InteractiveWaypoint = Waypoint & {
   styles?: CSSProperties;
-  display?: boolean;
   onClick?: (waypointId: string) => void;
 };
 
