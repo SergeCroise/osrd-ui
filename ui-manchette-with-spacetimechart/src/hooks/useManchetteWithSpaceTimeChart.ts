@@ -9,10 +9,9 @@ import type {
 import usePaths from './usePaths';
 import { MAX_ZOOM_Y, MIN_ZOOM_Y, ZOOM_Y_DELTA, DEFAULT_ZOOM_MS_PER_PX } from '../consts';
 import {
-  getDisplayedWaypoints,
+  computeWaypointsToDisplay,
   getWaypointsWithPosition as getOperationalPointWithPosition,
   getScales,
-  calcWaypointsHeight,
   zoomX,
   zoomValueToTimeScale,
   timeScaleToZoomValue,
@@ -59,12 +58,8 @@ const useManchettesWithSpaceTimeChart = (
   const paths = usePaths(projectPathTrainResult, selectedTrain);
 
   const waypointsToDisplay = useMemo(
-    () => getDisplayedWaypoints(waypoints, { height, isProportional, yZoom }),
+    () => computeWaypointsToDisplay(waypoints, { height, isProportional, yZoom }),
     [waypoints, height, isProportional, yZoom]
-  );
-  const waypointWithHeight = useMemo(
-    () => calcWaypointsHeight(waypointsToDisplay, { height, isProportional, yZoom }),
-    [waypointsToDisplay, height, yZoom, isProportional]
   );
 
   const operationalPointsWithPosition = useMemo(
@@ -154,7 +149,7 @@ const useManchettesWithSpaceTimeChart = (
 
   const manchetteProps = useMemo(
     () => ({
-      waypoints: waypointWithHeight,
+      waypoints: waypointsToDisplay,
       zoomYIn,
       zoomYOut,
       resetZoom,
@@ -163,7 +158,7 @@ const useManchettesWithSpaceTimeChart = (
       isProportional,
       yOffset,
     }),
-    [waypointWithHeight, zoomYIn, zoomYOut, resetZoom, toggleMode, yZoom, isProportional, yOffset]
+    [waypointsToDisplay, zoomYIn, zoomYOut, resetZoom, toggleMode, yZoom, isProportional, yOffset]
   );
 
   const handleXZoom = useCallback(

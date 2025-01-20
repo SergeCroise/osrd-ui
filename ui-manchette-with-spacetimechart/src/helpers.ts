@@ -1,6 +1,6 @@
 import type { InteractiveWaypoint, Waypoint } from '@osrd-project/ui-manchette/dist/types';
 import type { OperationalPoint } from '@osrd-project/ui-spacetimechart/dist/lib/types';
-import { clamp } from 'lodash';
+import { clamp, filter } from 'lodash';
 
 import {
   BASE_WAYPOINT_HEIGHT,
@@ -42,48 +42,50 @@ export const filterVisibleElements = (
   return displayedElements.sort((a, b) => a.position - b.position);
 };
 
-export const getDisplayedWaypoints = (
+export const computeWaypointsToDisplay = (
   waypoints: Waypoint[],
   { height, isProportional, yZoom }: WaypointsOptions
 ): InteractiveWaypoint[] => {
-  if (!isProportional || waypoints.length === 0) {
-    return waypoints;
-  }
-
-  const totalDistance = calcTotalDistance(waypoints);
-  const heightWithoutFinalWaypoint = getHeightWithoutLastWaypoint(height);
-  const minSpace = BASE_WAYPOINT_HEIGHT / yZoom;
-
-  return filterVisibleElements(waypoints, totalDistance, heightWithoutFinalWaypoint, minSpace);
-};
-
-export const calcWaypointsHeight = (
-  waypoints: InteractiveWaypoint[],
-  { height, isProportional, yZoom }: WaypointsOptions
-) => {
   if (waypoints.length < 2) return [];
+
   const totalDistance = calcTotalDistance(waypoints);
   const heightWithoutFinalWaypoint = getHeightWithoutLastWaypoint(height);
 
-  return waypoints.map((waypoint, index) => {
-    const nextWaypoint = waypoints.at(index + 1);
-    if (!nextWaypoint) {
-      return { ...waypoint, styles: { height: `${BASE_WAYPOINT_HEIGHT}px` } };
-    }
-    if (isProportional) {
+  // display all waypoints in linear mode
+  if (!isProportional) {
+    return waypoints.map((waypoint, index) => {
+      const nextWaypoint = waypoints.at(index + 1);
       return {
         ...waypoint,
-        styles: {
-          height: `${
-            ((nextWaypoint.position - waypoint.position) / totalDistance) *
-            heightWithoutFinalWaypoint *
-            yZoom
-          }px`,
-        },
+        styles: { height: `${BASE_WAYPOINT_HEIGHT * (nextWaypoint ? yZoom : 1)}px` },
       };
-    } else {
-      return { ...waypoint, styles: { height: `${BASE_WAYPOINT_HEIGHT * yZoom}px` } };
-    }
+    });
+  }
+
+  // in proportional mode, hide some waypoints to avoid collisions
+  const minSpace = BASE_WAYPOINT_HEIGHT / yZoom;
+
+  const filteredWaypoints = filterVisibleElements(
+    waypoints,
+    totalDistance,
+    heightWithoutFinalWaypoint,
+    minSpace
+  );
+
+  return filteredWaypoints.map((waypoint, index) => {
+    const nextWaypoint = filteredWaypoints.at(index + 1);
+    return {
+      ...waypoint,
+      styles: {
+        height: !nextWaypoint
+          ? `${BASE_WAYPOINT_HEIGHT}px`
+          : `${
+              ((nextWaypoint.position - waypoint.position) / totalDistance) *
+              heightWithoutFinalWaypoint *
+              yZoom
+            }px`,
+      },
+    };
   });
 };
 
