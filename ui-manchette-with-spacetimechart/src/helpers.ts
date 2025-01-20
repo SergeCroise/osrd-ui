@@ -47,21 +47,14 @@ export const getDisplayedWaypoints = (
   { height, isProportional, yZoom }: WaypointsOptions
 ): InteractiveWaypoint[] => {
   if (!isProportional || waypoints.length === 0) {
-    return waypoints.map((waypoint) => ({ ...waypoint, display: true }));
+    return waypoints;
   }
 
   const totalDistance = calcTotalDistance(waypoints);
   const heightWithoutFinalWaypoint = getHeightWithoutLastWaypoint(height);
   const minSpace = BASE_WAYPOINT_HEIGHT / yZoom;
 
-  const displayedWaypoints = filterVisibleElements(
-    waypoints,
-    totalDistance,
-    heightWithoutFinalWaypoint,
-    minSpace
-  );
-
-  return displayedWaypoints.map((waypoint) => ({ ...waypoint, display: true }));
+  return filterVisibleElements(waypoints, totalDistance, heightWithoutFinalWaypoint, minSpace);
 };
 
 export const calcWaypointsHeight = (

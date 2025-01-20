@@ -20,34 +20,29 @@ const mockedWaypoints = [
 describe('getDisplayedWaypoints', () => {
   it('should display all points for non-proportional display', () => {
     const result = getDisplayedWaypoints(mockedWaypoints, {
-      height: 500,
+      height: 100,
       isProportional: false,
       yZoom: 1,
     });
     expect(result).toHaveLength(mockedWaypoints.length);
-    result.forEach((waypoint) => {
-      expect(waypoint.display).toBe(true);
-    });
   });
 
   it('should calculate proportional display correctly', () => {
     const result = getDisplayedWaypoints(mockedWaypoints, {
-      height: 500,
+      height: 100,
       isProportional: true,
       yZoom: 1,
     });
-    expect(result).toHaveLength(mockedWaypoints.length);
-    expect(result[0].display).toBe(true);
-    expect(result[1].display).toBe(true);
+    expect(result).toHaveLength(2);
   });
 
   it('should ensure the last point is always displayed', () => {
     const result = getDisplayedWaypoints(mockedWaypoints, {
-      height: 500,
+      height: 100,
       isProportional: true,
       yZoom: 1,
     });
-    expect(result[result.length - 1].display).toBe(true);
+    expect(result.some((waypoint) => waypoint.id === 'waypoint-3')).toBe(true);
   });
 });
 
