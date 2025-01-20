@@ -10,7 +10,6 @@ import usePaths from './usePaths';
 import { MAX_ZOOM_Y, MIN_ZOOM_Y, ZOOM_Y_DELTA, DEFAULT_ZOOM_MS_PER_PX } from '../consts';
 import {
   computeWaypointsToDisplay,
-  getWaypointsWithPosition as getOperationalPointWithPosition,
   getScales,
   zoomX,
   zoomValueToTimeScale,
@@ -62,8 +61,14 @@ const useManchettesWithSpaceTimeChart = (
     [waypoints, height, isProportional, yZoom]
   );
 
-  const operationalPointsWithPosition = useMemo(
-    () => getOperationalPointWithPosition(waypointsToDisplay),
+  const simplifiedWaypoints = useMemo(
+    () =>
+      waypointsToDisplay.map((point) => ({
+        id: point.id,
+        label: point.id,
+        position: point.position,
+        importanceLevel: 1,
+      })),
     [waypointsToDisplay]
   );
 
@@ -143,8 +148,8 @@ const useManchettesWithSpaceTimeChart = (
   }, []);
 
   const computedScales = useMemo(
-    () => getScales(operationalPointsWithPosition, { height, isProportional, yZoom }),
-    [operationalPointsWithPosition, height, isProportional, yZoom]
+    () => getScales(simplifiedWaypoints, { height, isProportional, yZoom }),
+    [simplifiedWaypoints, height, isProportional, yZoom]
   );
 
   const manchetteProps = useMemo(
@@ -173,7 +178,7 @@ const useManchettesWithSpaceTimeChart = (
 
   const spaceTimeChartProps = useMemo(
     () => ({
-      operationalPoints: operationalPointsWithPosition,
+      operationalPoints: simplifiedWaypoints,
       spaceScales: computedScales,
       timeScale: zoomValueToTimeScale(xZoom),
       paths,
@@ -215,7 +220,7 @@ const useManchettesWithSpaceTimeChart = (
       },
     }),
     [
-      operationalPointsWithPosition,
+      simplifiedWaypoints,
       computedScales,
       xZoom,
       paths,

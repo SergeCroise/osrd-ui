@@ -1,6 +1,5 @@
 import type { InteractiveWaypoint, Waypoint } from '@osrd-project/ui-manchette/dist/types';
-import type { OperationalPoint } from '@osrd-project/ui-spacetimechart/dist/lib/types';
-import { clamp, filter } from 'lodash';
+import { clamp } from 'lodash';
 
 import {
   BASE_WAYPOINT_HEIGHT,
@@ -88,14 +87,6 @@ export const computeWaypointsToDisplay = (
     };
   });
 };
-
-export const getWaypointsWithPosition = (waypoints: InteractiveWaypoint[]): OperationalPoint[] =>
-  waypoints.map((point) => ({
-    id: point.id,
-    label: point.id,
-    position: point.position,
-    importanceLevel: 1,
-  }));
 
 export const getScales = (
   waypoints: Waypoint[],

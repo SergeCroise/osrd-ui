@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
 import { BASE_WAYPOINT_HEIGHT } from '../consts';
-import { computeWaypointsToDisplay, getWaypointsWithPosition, getScales } from '../helpers';
+import { computeWaypointsToDisplay, getScales } from '../helpers';
 
 // Assuming these types from your code
 
@@ -61,17 +61,6 @@ describe('computeWaypointsToDisplay', () => {
       yZoom: 1,
     });
     expect(result.some((waypoint) => waypoint.id === 'waypoint-3')).toBe(true);
-  });
-});
-
-describe('getWaypointsWithPosition', () => {
-  it('should return waypoints with position and label', () => {
-    const result = getWaypointsWithPosition(mockedWaypoints);
-    expect(result).toHaveLength(mockedWaypoints.length);
-    result.forEach((waypoint, index) => {
-      expect(waypoint.id).toBe(mockedWaypoints[index].id);
-      expect(waypoint.position).toBe(mockedWaypoints[index].position);
-    });
   });
 });
 
