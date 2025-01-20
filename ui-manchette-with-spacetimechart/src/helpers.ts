@@ -13,44 +13,33 @@ import { calcTotalDistance, getHeightWithoutLastWaypoint } from './utils';
 
 type WaypointsOptions = { isProportional: boolean; yZoom: number; height: number };
 
-type VisibilityFilterOptions<T> = {
-  elements: T[];
-  getPosition: (element: T) => number;
-  getWeight: (element: T) => number | undefined;
-  minSpace: number;
-};
+export const filterVisibleElements = (
+  elements: Waypoint[],
+  totalDistance: number,
+  heightWithoutFinalWaypoint: number,
+  minSpace: number
+): Waypoint[] => {
+  const getPosition = (waypoint: Waypoint) =>
+    (waypoint.position / totalDistance) * heightWithoutFinalWaypoint;
 
-export const filterVisibleElements = <T>({
-  elements,
-  getPosition,
-  getWeight,
-  minSpace,
-}: VisibilityFilterOptions<T>): T[] => {
   const firstElement = elements.at(0);
   const lastElement = elements.at(-1);
   if (!firstElement || !lastElement) return elements;
 
-  const sortedElements = [...elements].sort((a, b) => (getWeight(b) ?? 0) - (getWeight(a) ?? 0));
-  const displayedElements: { element: T; position: number }[] = [
-    { element: firstElement, position: getPosition(firstElement) },
-    { element: lastElement, position: getPosition(lastElement) },
-  ];
+  const sortedElements = [...elements].sort((a, b) => (b.weight ?? 0) - (a.weight ?? 0));
+  const displayedElements: Waypoint[] = [firstElement, lastElement];
 
   for (const element of sortedElements) {
-    const position = getPosition(element);
-
     const hasSpace = !displayedElements.some(
-      (displayed) => Math.abs(position - displayed.position) < minSpace
+      (displayed) => Math.abs(getPosition(element) - getPosition(displayed)) < minSpace
     );
 
     if (hasSpace) {
-      displayedElements.push({ element, position });
+      displayedElements.push(element);
     }
   }
 
-  return displayedElements
-    .sort((a, b) => getPosition(a.element) - getPosition(b.element))
-    .map(({ element }) => element);
+  return displayedElements.sort((a, b) => a.position - b.position);
 };
 
 export const getDisplayedWaypoints = (
@@ -65,12 +54,12 @@ export const getDisplayedWaypoints = (
   const heightWithoutFinalWaypoint = getHeightWithoutLastWaypoint(height);
   const minSpace = BASE_WAYPOINT_HEIGHT / yZoom;
 
-  const displayedWaypoints = filterVisibleElements({
-    elements: waypoints,
-    getPosition: (waypoint) => (waypoint.position / totalDistance) * heightWithoutFinalWaypoint,
-    getWeight: (waypoint) => waypoint.weight,
-    minSpace,
-  });
+  const displayedWaypoints = filterVisibleElements(
+    waypoints,
+    totalDistance,
+    heightWithoutFinalWaypoint,
+    minSpace
+  );
 
   return displayedWaypoints.map((waypoint) => ({ ...waypoint, display: true }));
 };
